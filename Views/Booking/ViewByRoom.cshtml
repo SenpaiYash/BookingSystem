@@ -1,0 +1,28 @@
+﻿@model IEnumerable<BookingSystem.Models.Entities.Booking>
+
+<h2>Filtered Bookings</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Room</th>
+            <th>User</th>
+            <th>Date</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var booking in Model)
+        {
+            <tr>
+                <td>@booking.Room.RoomName</td>
+                <td>@booking.User.UserName</td>
+                <td>@booking.BookingDate.ToString("yyyy-MM-dd")</td>
+                <td>@booking.StartTime</td>
+                <td>@booking.EndTime</td>
+            </tr>
+        }
+    </tbody>
+</table>
+

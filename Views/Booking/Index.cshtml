@@ -1,0 +1,34 @@
+﻿@model IEnumerable<BookingSystem.Models.BookingModel>
+
+<h2>Bookings List</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Room Name</th>
+            <th>User Name</th>
+            <th>Booking Date</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var booking in Model)
+        {
+            <tr>
+                <td>@booking.RoomName</td>
+                <td>@booking.UserName</td>
+                <td>@booking.BookingDate.ToShortDateString()</td>
+                <td>@booking.StartTime</td>
+                <td>@booking.EndTime</td>
+                <td>
+                    <a href="@Url.Action("Edit", new { id = booking.BookingID })" class="btn btn-primary btn-sm">Edit</a>
+                    <a href="@Url.Action("Delete", new { id = booking.BookingID })" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a href="@Url.Action("Create")" class="btn btn-primary">Create New Booking</a>

@@ -46,12 +46,21 @@ namespace BookingSystem.Repositories
 
         public async Task<List<Booking>> GetBookingsByRoomAsync(int roomId)
         {
-            return await _context.Bookings.Where(b => b.RoomID == roomId).ToListAsync();
+            return await _context.Bookings
+                                 .Include(b => b.Room)
+                                 .Include(b => b.User)
+                                 .Where(b => b.RoomID == roomId)
+                                 .ToListAsync();
         }
+
 
         public async Task<List<Booking>> GetBookingsByUserAsync(int userId)
         {
-            return await _context.Bookings.Where(b => b.UserID == userId).ToListAsync();
+            return await _context.Bookings
+                                 .Include(b => b.Room)
+                                 .Include(b => b.User)
+                                 .Where(b => b.UserID == userId)
+                                 .ToListAsync();
         }
     }
 

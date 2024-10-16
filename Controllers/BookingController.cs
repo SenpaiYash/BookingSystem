@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using BookingSystem.Models;
 using BookingSystem.Services;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -117,6 +116,20 @@ namespace BookingSystem.Controllers
             return RedirectToAction("Index");
         }
 
-        
+        // GET: /Booking/ViewByRoom/{roomId}
+        public async Task<IActionResult> ViewByRoom(int roomId)
+        {
+            var bookings = await _bookingService.GetBookingsByRoomAsync(roomId);
+            return View(bookings);  // bookings is IEnumerable<BookingModel>
+        }
+
+        // GET: /Booking/ViewByUser/{userId}
+        public async Task<IActionResult> ViewByUser(int userId)
+        {
+            var bookings = await _bookingService.GetBookingsByUserAsync(userId);
+            return View(bookings);  // bookings is IEnumerable<BookingModel>
+        }
+
+
     }
 }

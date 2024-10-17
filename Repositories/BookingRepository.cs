@@ -12,13 +12,21 @@ namespace BookingSystem.Repositories
         {
             _context = context;
         }
-        
+
         public async Task<Booking> GetBookingByIdAsync(int bookingId)
         {
             return await _context.Bookings
-                                 .Include(b => b.Room) 
-                                 .Include(b => b.User)  
+                                 .Include(b => b.Room)
+                                 .Include(b => b.User)
                                  .FirstOrDefaultAsync(b => b.Id == bookingId);
+        }
+
+        public async Task<List<Booking>> GetAllBookingsAsync()
+        {
+            return await _context.Bookings
+                                 .Include(b => b.Room)
+                                 .Include(b => b.User)
+                                 .ToListAsync();
         }
 
         public async Task<Booking> CreateBookingAsync(Booking booking)
@@ -56,11 +64,12 @@ namespace BookingSystem.Repositories
 
         public async Task<List<Booking>> GetBookingsByUserAsync(int userId)
         {
-            return await _context.Bookings
+            var userBookings = await _context.Bookings
                                  .Include(b => b.Room)
                                  .Include(b => b.User)
                                  .Where(b => b.UserID == userId)
                                  .ToListAsync();
+            return userBookings;
         }
     }
 

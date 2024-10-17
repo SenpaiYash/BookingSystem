@@ -7,8 +7,8 @@
         public int UserID { get; set; }
         public User User { get; set; }
         public DateTime BookingDate { get; set; }
-        public TimeSpan StartTime { get; set; }
-        public TimeSpan EndTime { get; set; }
+        public TimeOnly StartTime { get; set; }
+        public TimeOnly EndTime { get; set; }
         public ICollection<BookingIntegration> BookingIntegrations { get; set; }
     }
 }

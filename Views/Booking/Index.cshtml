@@ -13,6 +13,8 @@
             <th>Start Time</th>
             <th>End Time</th>
             <th>Actions</th>
+            <th>View By User</th>
+            <th>View By Room</th>
         </tr>
     </thead>
     <tbody>
@@ -25,8 +27,14 @@
                 <td>@booking.StartTime</td>
                 <td>@booking.EndTime</td>
                 <td>
-                    <a href="@Url.Action("Edit", new { id = booking.BookingID })" class="btn btn-primary btn-sm">Edit</a>
-                    <a href="@Url.Action("Delete", new { id = booking.BookingID })" class="btn btn-danger btn-sm">Delete</a>
+                    <a href="@Url.Action("Edit", new { id = booking.Id })" class="btn btn-primary btn-sm">Edit</a>
+                    <a href="@Url.Action("Delete", new { id = booking.Id })" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+                <td>
+                    <a href="@Url.Action("ViewBookingsByUser", new { userId = booking.UserID })" class="btn btn-primary btn-sm">View</a>
+                </td>
+                <td>
+                    <a href="@Url.Action("ViewBookingsByRoom", new { roomId = booking.RoomID })" class="btn btn-primary btn-sm">View</a>
                 </td>
             </tr>
         }

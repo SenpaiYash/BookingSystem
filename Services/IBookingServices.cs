@@ -5,6 +5,7 @@ namespace BookingSystem.Services
 {
     public interface IBookingService
     {
+        Task<IEnumerable<BookingModel>> GetAllBookingsAsync();
         Task<BookingModel> GetBookingByIdAsync(int bookingId);
         Task CreateBookingAsync(BookingModel model);
         Task UpdateBookingAsync(BookingModel model);

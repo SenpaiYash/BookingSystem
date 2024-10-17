@@ -1,6 +1,4 @@
 ﻿@model BookingSystem.Models.BookingModel
-@{
-}
 
 <h2>Delete Booking</h2>
 
@@ -24,8 +22,8 @@
     </dl>
 </div>
 
-<form asp-action="DeleteConfirmed" method="post">
-    <input type="hidden" asp-for="BookingID" />
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
     <button type="submit" class="btn btn-danger">Delete</button>
     <a asp-action="Index" class="btn btn-secondary">Cancel</a>
 </form>

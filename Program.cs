@@ -1,7 +1,6 @@
+using BookingSystem;
 using BookingSystem.Data;
 using BookingSystem.Mapping;
-using BookingSystem.Repositories;
-using BookingSystem.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,14 +12,10 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<BookingContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("BookingConString")));
 
-// Register Repositories
-builder.Services.AddScoped<IBookingRepository, BookingRepository>();
-
-// Register Services
-builder.Services.AddScoped<IBookingService, BookingService>(); // Register BookingService
-
 // Add AutoMapper (scans the assembly for profiles)
 builder.Services.AddAutoMapper(typeof(BookingProfile));
+// Add services
+builder.Services.AddServices();
 
 var app = builder.Build();
 

@@ -2,6 +2,7 @@
 using BookingSystem.Models;
 using BookingSystem.Repositories;
 using AutoMapper;
+using BookingSystem.External_Services;
 
 namespace BookingSystem.Services
 {
@@ -9,14 +10,19 @@ namespace BookingSystem.Services
     {
         private readonly IBookingRepository _bookingRepository;
         private readonly IMapper _mapper;
+        private readonly IConfiguration _configuration;
+        private readonly ICalendarSyncService calendarSyncService;
 
-        public BookingService(IBookingRepository bookingRepository,IMapper mapper)
+        public BookingService(IBookingRepository bookingRepository,
+            IMapper mapper, IConfiguration configuration, ICalendarSyncService calendarSyncService)
         {
             _bookingRepository = bookingRepository;
             _mapper = mapper;
+            this._configuration = configuration;
+            this.calendarSyncService = calendarSyncService;
         }
 
-        // Get a booking by ID and convert it to BookingModel
+
         public async Task<BookingModel> GetBookingByIdAsync(int bookingId)
         {
             var booking = await _bookingRepository.GetBookingByIdAsync(bookingId);
@@ -24,8 +30,13 @@ namespace BookingSystem.Services
             {
                 return null;
             }
+            return _mapper.Map<BookingModel>(booking);  
+        }
 
-            return _mapper.Map<BookingModel>(booking);
+        public async Task<IEnumerable<BookingModel>> GetAllBookingsAsync()
+        {
+            var bookings = await _bookingRepository.GetAllBookingsAsync();  
+            return _mapper.Map<IEnumerable<BookingModel>>(bookings);
         }
 
         // Create a new booking (no conversion needed)
@@ -33,15 +44,26 @@ namespace BookingSystem.Services
         {
             var booking = _mapper.Map<Booking>(model);
             await _bookingRepository.CreateBookingAsync(booking);
+
+            bool enableExchange = _configuration.GetValue<bool>("Synchronization:EnableExchangeSync");
+            bool enableGoogle = _configuration.GetValue<bool>("Synchronization:EnableGoogleSync");
+
+            if (enableExchange)
+            {
+                await calendarSyncService.ExchangeCalenderAsync(model);
+            }
+            if (enableGoogle)
+            {
+                await calendarSyncService.GoogleCalenderAsync(model);
+            }
         }
 
-        // Update an existing booking
+
         public async Task UpdateBookingAsync(BookingModel model)
         {
-            var booking = await _bookingRepository.GetBookingByIdAsync(model.BookingID);
+            var booking = await _bookingRepository.GetBookingByIdAsync(model.Id);
             if (booking != null)
             {
-                // Use AutoMapper to map BookingModel to Booking
                 _mapper.Map(model, booking);
                 await _bookingRepository.UpdateBookingAsync(booking);
             }
@@ -57,7 +79,6 @@ namespace BookingSystem.Services
         public async Task<IEnumerable<BookingModel>> GetBookingsByRoomAsync(int roomId)
         {
             var bookings = await _bookingRepository.GetBookingsByRoomAsync(roomId);
-            // Use AutoMapper to map List<Booking> to List<BookingModel>
             return _mapper.Map<IEnumerable<BookingModel>>(bookings);
         }
 
@@ -65,7 +86,6 @@ namespace BookingSystem.Services
         public async Task<IEnumerable<BookingModel>> GetBookingsByUserAsync(int userId)
         {
             var bookings = await _bookingRepository.GetBookingsByUserAsync(userId);
-            // Use AutoMapper to map List<Booking> to List<BookingModel>
             return _mapper.Map<IEnumerable<BookingModel>>(bookings);
         }
     }

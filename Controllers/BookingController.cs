@@ -3,7 +3,8 @@ using BookingSystem.Models;
 using BookingSystem.Services;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using BookingSystem.Data;
-using BookingSystem.Models.Entities;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace BookingSystem.Controllers
 {
@@ -21,17 +22,21 @@ namespace BookingSystem.Controllers
         // GET: /Booking/
         public async Task<IActionResult> Index()
         {
-            var bookings = await _bookingService.GetBookingsByRoomAsync(1); // Example Room ID
+            var bookings = await _bookingService.GetAllBookingsAsync();  
             return View(bookings);
         }
 
         // GET: /Booking/Create
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             // Populate dropdowns for Room and User
-            ViewBag.Rooms = new SelectList(_context.Rooms, "RoomID", "RoomName");
-            ViewBag.Users = new SelectList(_context.Users, "UserID", "UserName");
+
+            var roomList = await GetRooms();
+            var usersList = await GetUsers();            
+
+            ViewBag.Rooms = roomList;
+            ViewBag.Users = usersList;
             return View();
         }
 
@@ -46,8 +51,11 @@ namespace BookingSystem.Controllers
             }
 
             // Repopulate dropdowns if validation fails
-            ViewBag.Rooms = new SelectList(_context.Rooms, "RoomID", "RoomName");
-            ViewBag.Users = new SelectList(_context.Users, "UserID", "UserName");
+            var roomList = await GetRooms();
+            var usersList = await GetUsers();
+
+            ViewBag.Rooms = roomList;
+            ViewBag.Users = usersList;
             return View(model);
         }
 
@@ -63,14 +71,17 @@ namespace BookingSystem.Controllers
             }
 
             // Populate dropdowns for Room and User
-            ViewBag.Rooms = new SelectList(_context.Rooms, "RoomID", "RoomName");
-            ViewBag.Users = new SelectList(_context.Users, "UserID", "UserName");
-            return View(booking);  // booking will be of type BookingModel
+            var roomList = await GetRooms();
+            var usersList = await GetUsers();
+
+            ViewBag.Rooms = roomList;
+            ViewBag.Users = usersList;
+            return View(booking);  
         }
 
         //// POST: /Booking/Edit/{id}
         [HttpPost]
-        public async Task<IActionResult> Edit(int id, Booking model)
+        public async Task<IActionResult> Edit(int id, BookingModel model)
         {
             if (ModelState.IsValid)
             {
@@ -90,9 +101,12 @@ namespace BookingSystem.Controllers
                 return RedirectToAction("Index");
             }
 
-            // Repopulate dropdowns if validation fails
-            ViewBag.Rooms = new SelectList(_context.Rooms, "RoomID", "RoomName");
-            ViewBag.Users = new SelectList(_context.Users, "UserID", "UserName");
+            
+            var roomList = await GetRooms();
+            var usersList = await GetUsers();
+
+            ViewBag.Rooms = roomList;
+            ViewBag.Users = usersList;
             return View(model);
         }
 
@@ -116,20 +130,49 @@ namespace BookingSystem.Controllers
             return RedirectToAction("Index");
         }
 
-        // GET: /Booking/ViewByRoom/{roomId}
-        public async Task<IActionResult> ViewByRoom(int roomId)
+
+        // View all bookings for a specific room
+        [HttpGet]
+        public async Task<IActionResult> ViewBookingsByRoom(int roomId)
         {
             var bookings = await _bookingService.GetBookingsByRoomAsync(roomId);
-            return View(bookings);  // bookings is IEnumerable<BookingModel>
+            return View(bookings);  
         }
 
-        // GET: /Booking/ViewByUser/{userId}
-        public async Task<IActionResult> ViewByUser(int userId)
+        // View all bookings for a specific user
+        [HttpGet]
+        public async Task<IActionResult> ViewBookingsByUser(int userId)
         {
             var bookings = await _bookingService.GetBookingsByUserAsync(userId);
-            return View(bookings);  // bookings is IEnumerable<BookingModel>
+            return View(bookings);  
         }
 
+        private async Task<List<SelectListItem>> GetRooms()
+        {
+            var rooms = await _context.Rooms.ToListAsync();
 
+            List<SelectListItem> roomList = (from room in rooms
+                                             select new SelectListItem
+                                             {
+                                                 Value = room.Id.ToString(),
+                                                 Text = room.RoomName
+                                             }).ToList();
+
+            return roomList;
+        }
+
+        private async Task<List<SelectListItem>> GetUsers()
+        {
+            var users = await _context.Users.ToListAsync();
+
+            List<SelectListItem> userList = (from user in users
+                                             select new SelectListItem
+                                             {
+                                                 Value = user.Id.ToString(),
+                                                 Text = user.UserName
+                                             }).ToList();
+
+            return userList;
+        }
     }
 }

@@ -24,13 +24,6 @@ CREATE TABLE IntegrationType (
     Name NVARCHAR(100)
 );
 
-CREATE TABLE RoomIntegration (
-    RoomIntegrationID INT PRIMARY KEY IDENTITY(1,1),
-    RoomID INT FOREIGN KEY REFERENCES Room(RoomID),
-    IntegrationTypeID INT FOREIGN KEY REFERENCES IntegrationType(IntegrationTypeID),
-    ExternalCalendarID NVARCHAR(100)
-);
-
 CREATE TABLE BookingIntegration (
     BookingIntegrationID INT PRIMARY KEY IDENTITY(1,1),
     BookingID INT FOREIGN KEY REFERENCES Booking(BookingID),

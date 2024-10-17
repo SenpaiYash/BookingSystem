@@ -4,6 +4,7 @@ using BookingSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookingSystem.Migrations
 {
     [DbContext(typeof(BookingContext))]
-    partial class BookingContextModelSnapshot : ModelSnapshot
+    [Migration("20241017105459_INIT2")]
+    partial class INIT2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -120,6 +123,33 @@ namespace BookingSystem.Migrations
                     b.ToTable("Rooms");
                 });
 
+            modelBuilder.Entity("BookingSystem.Models.Entities.RoomIntegration", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ExternalCalendarID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("IntegrationTypeID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RoomID")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IntegrationTypeID");
+
+                    b.HasIndex("RoomID");
+
+                    b.ToTable("RoomIntegrations");
+                });
+
             modelBuilder.Entity("BookingSystem.Models.Entities.User", b =>
                 {
                     b.Property<int>("Id")
@@ -175,6 +205,25 @@ namespace BookingSystem.Migrations
                     b.Navigation("IntegrationType");
                 });
 
+            modelBuilder.Entity("BookingSystem.Models.Entities.RoomIntegration", b =>
+                {
+                    b.HasOne("BookingSystem.Models.Entities.IntegrationType", "IntegrationType")
+                        .WithMany("RoomIntegrations")
+                        .HasForeignKey("IntegrationTypeID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BookingSystem.Models.Entities.Room", "Room")
+                        .WithMany("RoomIntegrations")
+                        .HasForeignKey("RoomID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("IntegrationType");
+
+                    b.Navigation("Room");
+                });
+
             modelBuilder.Entity("BookingSystem.Models.Entities.Booking", b =>
                 {
                     b.Navigation("BookingIntegrations");
@@ -183,11 +232,15 @@ namespace BookingSystem.Migrations
             modelBuilder.Entity("BookingSystem.Models.Entities.IntegrationType", b =>
                 {
                     b.Navigation("BookingIntegrations");
+
+                    b.Navigation("RoomIntegrations");
                 });
 
             modelBuilder.Entity("BookingSystem.Models.Entities.Room", b =>
                 {
                     b.Navigation("Bookings");
+
+                    b.Navigation("RoomIntegrations");
                 });
 
             modelBuilder.Entity("BookingSystem.Models.Entities.User", b =>

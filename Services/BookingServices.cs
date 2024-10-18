@@ -45,8 +45,8 @@ namespace BookingSystem.Services
             var booking = _mapper.Map<Booking>(model);
             await _bookingRepository.CreateBookingAsync(booking);
 
-            bool enableExchange = _configuration.GetValue<bool>("Synchronization:EnableExchangeSync");
-            bool enableGoogle = _configuration.GetValue<bool>("Synchronization:EnableGoogleSync");
+            bool enableExchange = bool.Parse(_configuration["Synchronization:EnableExchangeSync"]);
+            bool enableGoogle = bool.Parse(_configuration["Synchronization:EnableGoogleSync"]);
 
             if (enableExchange)
             {
